@@ -1,26 +1,102 @@
 @import "tailwindcss";
 
+@theme {
+  /* Brand palette — derived from the RAJ logo (crimson / green / blue on ivory) */
+  --color-ivory-50: #fdfcf9;
+  --color-ivory-100: #faf7f0;
+  --color-ivory-200: #f3eee1;
+  --color-ivory-300: #e9e1ce;
+
+  --color-ink-950: #101613;
+  --color-ink-900: #1b2420;
+  --color-ink-700: #35423c;
+  --color-ink-500: #5c6b64;
+  --color-ink-400: #7c8a83;
+
+  --color-brand-950: #062a1b;
+  --color-brand-900: #0a3a25;
+  --color-brand-800: #0e4a2f;
+  --color-brand-700: #135c3b;
+  --color-brand-600: #187247;
+  --color-brand-500: #218a57;
+  --color-brand-400: #48a276;
+  --color-brand-100: #dcefe4;
+  --color-brand-50: #eff7f2;
+
+  --color-crimson-700: #7e1626;
+  --color-crimson-600: #971d2f;
+  --color-crimson-500: #ae2439;
+  --color-crimson-400: #c34b5c;
+  --color-crimson-50: #fbeef0;
+
+  --color-royal-700: #174c86;
+  --color-royal-600: #1e5fa8;
+  --color-royal-500: #2a70be;
+  --color-royal-50: #eef4fb;
+
+  --color-gold-600: #a98b4f;
+  --color-gold-500: #c2a263;
+  --color-gold-400: #d4ba85;
+  --color-gold-300: #e3d2ac;
+
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+
+  --shadow-soft: 0 8px 30px rgb(16 22 19 / 0.06);
+  --shadow-lift: 0 18px 44px rgb(16 22 19 / 0.12);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  scroll-behavior: smooth;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-ivory-50);
+  color: var(--color-ink-900);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-brand-100);
+  color: var(--color-brand-900);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
+}
+
+/* Subtle Arabic-geometric lattice, light sections */
+.pattern-light {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg fill='none' stroke='%230e4a2f' stroke-opacity='0.05'%3E%3Cpath d='M36 2 70 36 36 70 2 36Z'/%3E%3Cpath d='M36 18 54 36 36 54 18 36Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Same lattice for deep-green sections */
+.pattern-dark {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg fill='none' stroke='%23faf7f0' stroke-opacity='0.05'%3E%3Cpath d='M36 2 70 36 36 70 2 36Z'/%3E%3Cpath d='M36 18 54 36 36 54 18 36Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Thin champagne-gold hairline divider */
+.hairline-gold {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-gold-400) 20%,
+    var(--color-gold-400) 80%,
+    transparent
+  );
 }

@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rawdah Al Jazira T A Cleaning Services — Website
 
-## Getting Started
+Premium marketing website for **Rawdah Al Jazira T A Cleaning Services L.L.C**,
+a commercial cleaning company in Al Khabaisi, Dubai.
 
-First, run the development server:
+Built with **Next.js 16** (App Router, TypeScript), **Tailwind CSS v4**,
+Framer Motion, React Hook Form + Zod, and Resend for contact-form email.
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The contact form works without any configuration — in development it logs
+enquiries to the terminal instead of sending email. To send real email,
+copy `.env.example` to `.env.local` and fill in the keys.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Editing content
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All content lives in typed data files — no code changes needed:
 
-## Learn More
+| What | File |
+|---|---|
+| Phone, email, address, hours, domain | `src/data/company.ts` |
+| The 12 services (titles, descriptions, checklists) | `src/data/services.ts` |
+| Sectors, stats, process steps, testimonials, nav | `src/data/site.ts` |
 
-To learn more about Next.js, take a look at the following resources:
+Items pending the owner's confirmation are listed in `CONTENT-TODO.md`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploying to Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Push this repository to GitHub.
+2. In [vercel.com](https://vercel.com), **Add New → Project**, import the repo — the defaults are correct.
+3. Set environment variables (Project → Settings → Environment Variables), per `.env.example`:
+   - `RESEND_API_KEY` — from [resend.com](https://resend.com) (free tier), so form submissions reach rawdahaljazira@gmail.com.
+   - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY` — from Cloudflare Turnstile (free), recommended for spam protection.
+4. Add the custom domain (Project → Settings → Domains) and update `siteUrl` in `src/data/company.ts` to match.
 
-## Deploy on Vercel
+## Security notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Strict security headers (CSP, HSTS, X-Frame-Options, etc.) are set in `next.config.ts`.
+- The contact API (`src/app/api/contact/route.ts`) re-validates all input with Zod,
+  checks a honeypot field, rate-limits by IP, verifies Cloudflare Turnstile when
+  configured, and HTML-escapes user content in the outgoing email.
+- No database and no stored user data — enquiries go straight to email.
+- Secrets live only in environment variables; `.env.local` is gitignored.

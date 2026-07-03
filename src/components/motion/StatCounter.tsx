@@ -1,0 +1,43 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useInView, useReducedMotion } from "framer-motion";
+
+/** Counts up from zero when scrolled into view. */
+export function StatCounter({
+  value,
+  suffix = "",
+  duration = 1.6,
+  className,
+}: {
+  value: number;
+  suffix?: string;
+  duration?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const reduce = useReducedMotion();
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (!inView || reduce) return;
+    let frame: number;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min((now - start) / (duration * 1000), 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplay(Math.round(eased * value));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [inView, value, duration, reduce]);
+
+  return (
+    <span ref={ref} className={className}>
+      {reduce ? value : display}
+      {suffix}
+    </span>
+  );
+}
