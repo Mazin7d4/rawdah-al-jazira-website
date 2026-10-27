@@ -29,6 +29,20 @@ All content lives in typed data files — no code changes needed:
 
 Items pending the owner's confirmation are listed in `CONTENT-TODO.md`.
 
+## Deploying to Netlify
+
+1. In [app.netlify.com](https://app.netlify.com), click **Add new site → Import an existing project**.
+2. Connect your **GitHub** account and choose `rawdahaljazira-IT/rawdah-al-jazira-website`.
+3. Netlify will detect the configuration automatically via `netlify.toml`:
+   - **Base directory**: (leave blank / root)
+   - **Build command**: `npm run build`
+   - **Publish directory**: `.next`
+4. Set environment variables (Site configuration → Environment variables) per `.env.example`:
+   - `NODE_VERSION` = `22` (already configured in `netlify.toml`)
+   - `RESEND_API_KEY` — from [resend.com](https://resend.com) (free tier), so form submissions reach rawdahaljazira@gmail.com.
+   - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY` — from Cloudflare Turnstile (free), recommended for spam protection.
+5. Click **Deploy rawdah-al-jazira-website**.
+
 ## Deploying to Vercel
 
 1. Push this repository to GitHub.
