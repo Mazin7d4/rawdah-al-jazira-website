@@ -79,18 +79,46 @@ export function ContactForm() {
     setStatus("submitting");
     setServerError("");
     try {
-      const res = await fetch("/api/contact", {
+      // Honeypot: if filled by a bot, silently simulate success
+      if (honeypotRef.current?.value) {
+        setStatus("success");
+        return;
+      }
+
+      const formData = new URLSearchParams();
+      formData.append("form-name", "contact");
+      formData.append("name", values.name);
+      if (values.company) formData.append("company", values.company);
+      formData.append("email", values.email);
+      formData.append("phone", values.phone);
+      formData.append("service", values.service);
+      if (values.facility) formData.append("facility", values.facility);
+      formData.append("message", values.message);
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("[dev] Netlify form submitted:", Object.fromEntries(formData));
+        setStatus("success");
+        return;
+      }
+
+      let res = await fetch("/__forms.html", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...values,
-          website: honeypotRef.current?.value ?? "",
-          turnstileToken,
-        }),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString(),
       });
-      const data: { ok: boolean; error?: string } = await res.json();
-      if (!res.ok || !data.ok) {
-        throw new Error(data.error ?? "Something went wrong. Please try again.");
+
+      if (!res.ok) {
+        res = await fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: formData.toString(),
+        });
+      }
+
+      if (!res.ok) {
+        throw new Error(
+          "We could not send your message right now. Please call or WhatsApp us directly.",
+        );
       }
       setStatus("success");
     } catch (err) {
@@ -131,7 +159,17 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} noValidate>
+    <form
+      name="contact"
+      method="POST"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+      noValidate
+    >
+      <input type="hidden" name="form-name" value="contact" />
+      <input type="hidden" name="bot-field" />
+
       {TURNSTILE_SITE_KEY && (
         <Script
           src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
@@ -142,12 +180,12 @@ export function ContactForm() {
 
       {/* Honeypot — hidden from real users, attractive to bots. */}
       <div aria-hidden className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden">
-        <label htmlFor="website">Website</label>
+        <label htmlFor="bot-field">Website</label>
         <input
           ref={honeypotRef}
           type="text"
-          id="website"
-          name="website"
+          id="bot-field"
+          name="bot-field"
           tabIndex={-1}
           autoComplete="off"
         />
